@@ -22,11 +22,16 @@ function App() {
     try {
       const response = await axios.get(
         `http://localhost:5000/weather?city=${city}`
+      { timeout: 90000 }
       );
       setWeather(response.data);
     } catch (err) {
-      setError(err.response?.data?.error || "Something went wrong");
-    } finally {
+  if (err.code === "ECONNABORTED" || err.message === "Network Error") {
+    setError("⏰ Server is waking up... Please wait 30 seconds and try again!");
+  } else {
+    setError(err.response?.data?.error || "Something went wrong");
+  }
+} finally {
       setLoading(false);
     }
   };
