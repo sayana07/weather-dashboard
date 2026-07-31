@@ -9,33 +9,34 @@ function App() {
   const [error, setError] = useState("");
 
   // Function to fetch weather from YOUR backend
-  const fetchWeather = async () => {
-    if (!city.trim()) {
-      setError("Please enter a city name");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setWeather(null);
-
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/weather?city=${city}`
-      { timeout: 90000 }
-      );
-      setWeather(response.data);
-    } catch (err) {
-  if (err.code === "ECONNABORTED" || err.message === "Network Error") {
-    setError("⏰ Server is waking up... Please wait 30 seconds and try again!");
-  } else {
-    setError(err.response?.data?.error || "Something went wrong");
+ const fetchWeather = async () => {
+  if (!city.trim()) {
+    setError("Please enter a city name");
+    return;
   }
-} finally {
-      setLoading(false);
-    }
-  };
 
+  setLoading(true);
+  setError("");
+  setWeather(null);
+
+  try {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+    const response = await axios.get(
+      `${API_URL}/weather?city=${city}`,
+      { timeout: 90000 }
+    );
+    setWeather(response.data);
+  } catch (err) {
+    if (err.code === "ECONNABORTED" || err.message === "Network Error") {
+      setError("⏰ Server is waking up... Please wait 30 seconds and try again!");
+    } else {
+      setError(err.response?.data?.error || "Something went wrong");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
   // Trigger search when Enter key is pressed
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
